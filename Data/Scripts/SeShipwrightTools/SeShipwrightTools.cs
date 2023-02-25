@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sandbox.Definitions;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Weapons;
+using Sandbox.ModAPI.Interfaces;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.ObjectBuilders;
 using VRage.Utils;
 using VRageMath;
-using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
+using Sandbox.Common.ObjectBuilders;
+//using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
 
 namespace Chozabu.ConveyorReplacer
 {
@@ -108,7 +111,9 @@ namespace Chozabu.ConveyorReplacer
 			List<IMySlimBlock> conveyorBlocks = new List<IMySlimBlock>();
 			List<replaceinfo> replaceList = new List<replaceinfo>();
 
-			grid.GetBlocks(conveyorBlocks, block => block.FatBlock != null && block.FatBlock.BlockDefinition.TypeId.ToString() == "MyObjectBuilder_Conveyor");
+			//grid.GetBlocks(conveyorBlocks, block => block.FatBlock != null && block.FatBlock.BlockDefinition.TypeId.ToString() == "MyObjectBuilder_Conveyor");
+			grid.GetBlocks(conveyorBlocks, block => block.FatBlock != null && block.FatBlock.BlockDefinition.TypeId.ToString().Contains("Conveyor"));
+			
 
 			// Replace each conveyor block with the correct type
 			foreach (IMySlimBlock conveyorBlock in conveyorBlocks)
@@ -150,6 +155,32 @@ namespace Chozabu.ConveyorReplacer
 			return new Vector3(1, 0, 0);
 
 		}
+		//based on digis code at: https://github.com/THDigi/BuildInfo/blob/ac69e815a9c82e3d0e27013f86109af556a1f503/Data/Scripts/BuildInfo/Features/LiveData/LiveDataHandler.cs#L178
+		bool CheckConveyorSupport(IMyCubeBlock block)
+		{
+			if (block == null) return false;
+
+			Type[] interfaces = MyAPIGateway.Reflection.GetInterfaces(block.GetType());
+			bool supportsConveyors = false;
+
+			for (int i = (interfaces.Length - 1); i >= 0; i--)
+			{
+				Type iface = interfaces[i];
+				if (iface.Name == "IMyConveyorEndpointBlock")
+				{
+					supportsConveyors = true;
+					break;
+				}
+				else if (iface.Name == "IMyConveyorSegmentBlock")
+				{
+					supportsConveyors = true;
+					break;
+				}
+			}
+
+			return supportsConveyors;
+		}
+		//todo check if port is in right direction: https://github.com/THDigi/BuildInfo/blob/master/Data/Scripts/BuildInfo/Features/LiveData/Base.cs#L238
 
 		public List<IMySlimBlock> GetConveyorNeighbors(IMySlimBlock block)
 		{
@@ -164,6 +195,14 @@ namespace Chozabu.ConveyorReplacer
 				//if (neighbor.FatBlock is IMyConveyor)
 				{
 					conveyorBlocks.Add(neighbor);
+				} else
+                {
+                    //neighbor.FatBlock.CheckConnectionAllowed
+                    if (CheckConveyorSupport(neighbor.FatBlock)) {
+					//if (conveyorBlock != null)
+					//{
+						conveyorBlocks.Add(neighbor);
+					}
 				}
 			}
 
