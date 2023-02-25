@@ -5,7 +5,7 @@
  
  ## ConveyorReplacer - Backup your ship before using this tool. It may delete your conveyors, eat your homework or cause demons to fly out your nose
  
-type `/conv` in chat while looking at a grid to convert conveyor junctions to matching tube/corner/Tjunctions
+type `/conv` in chat while looking at a grid to convert all conveyor blocks to tube/corner/Tjunctions, fitting the surrounding blocks with coneyors/ports
 
 use `/convp` for industrial pipe
 
