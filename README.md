@@ -1,6 +1,8 @@
 # SeShipwrightTools
  Tools to aid ship building in SE - currently has ConveyorReplacor and TransparentArmour
  
+ Check it out on the steam workshop here: https://steamcommunity.com/sharedfiles/filedetails/?id=2938853980
+ 
  ## ArmorReplacer - Backup your ship before using this tool. It may delete your conveyors, eat your homework or cause demons to fly out your nose
  
 type `/conv` in chat while looking at a grid to convert conveyor junctions to matching tube/corner/Tjunctions
