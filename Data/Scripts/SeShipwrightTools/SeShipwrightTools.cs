@@ -115,7 +115,7 @@ namespace Chozabu.ConveyorReplacer
 			{
 				replaceinfo blockinfo;
 				blockinfo.block = conveyorBlock;
-				blockinfo.objectBuilder = replaceConveyorBlock(conveyorBlock, tubetype);
+				blockinfo.objectBuilder = GetBuilderToReplaceConveyor(conveyorBlock, tubetype);
 				// Replace the conveyor block
 				replaceList.Add(blockinfo);
 			}
@@ -170,7 +170,7 @@ namespace Chozabu.ConveyorReplacer
 			return conveyorBlocks;
 		}
 
-		public MyObjectBuilder_CubeBlock replaceConveyorBlock(IMySlimBlock block, string tubetype)
+		public MyObjectBuilder_CubeBlock GetBuilderToReplaceConveyor(IMySlimBlock block, string tubetype)
 		{
 
 			string junctionS = "LargeBlockConveyor";
@@ -286,10 +286,10 @@ namespace Chozabu.ConveyorReplacer
 				ConveyorType = junctionS;
 			}
 
-			return ReplaceBlockWithConveyor(block.CubeGrid, block, ConveyorType, up, forward);
+			return GetBuilderWithSpecs(block.CubeGrid, block, ConveyorType, up, forward);
 
 		}
-		public MyObjectBuilder_CubeBlock ReplaceBlockWithConveyor(IMyCubeGrid grid, IMySlimBlock blockToReplace, string conveyorType, Vector3D upVector, Vector3D forwardVector)
+		public MyObjectBuilder_CubeBlock GetBuilderWithSpecs(IMyCubeGrid grid, IMySlimBlock blockToReplace, string conveyorType, Vector3D upVector, Vector3D forwardVector)
 		{
 			Vector3I position = blockToReplace.Position;
 

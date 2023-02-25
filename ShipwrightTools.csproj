@@ -116,7 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SeShipwrightTools.cs" />
+    <Compile Include="Data\Scripts\SeShipwrightTools\SeShipwrightTools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
