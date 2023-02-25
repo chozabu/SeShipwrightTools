@@ -63,6 +63,19 @@ namespace Chozabu.ConveyorReplacer
 				PrintBlockNames();
 				sendToOthers = false;
 			}
+			if (messageText == "/showarmor" && MyAPIGateway.Session.IsServer)
+			{
+				MyAPIGateway.Utilities.ShowMessage("", "ShowingArmor");
+				SetArmorVisibility(true);
+				sendToOthers = false;
+			}
+			if (messageText == "/hidearmor" && MyAPIGateway.Session.IsServer)
+			{
+				MyAPIGateway.Utilities.ShowMessage("", "HidingArmor");
+				SetArmorVisibility(false);
+				sendToOthers = false;
+			}
+
 		}
 		public IMyCubeGrid GetTargetedGrid()
 		{
@@ -83,6 +96,48 @@ namespace Chozabu.ConveyorReplacer
 
 			var grid = entity.GetTopMostParent() as IMyCubeGrid;
 			return grid;
+		}
+
+		public void SetArmorVisibility(bool showBlock)
+		{
+			float transparancy = 0.0f;
+			if (!showBlock) transparancy = 0.8f;
+			IMyCubeGrid grid = GetTargetedGrid();
+			if (grid == null) return;
+
+			List<IMySlimBlock> allBlocks = new List<IMySlimBlock>();
+
+			grid.GetBlocks(allBlocks);
+
+			// Replace each conveyor block with the correct type
+			foreach (IMySlimBlock block in allBlocks)
+			{
+
+				if (block.GetObjectBuilder().SubtypeName.Contains("Armor"))// && block.FatBlock != null)
+				{
+					MyAPIGateway.Utilities.ShowMessage("", block.GetObjectBuilder().SubtypeName);
+					//attmpt1
+					//block.FatBlock.Render.Visible = showBlock;
+
+					//attempt2
+					//block.FatBlock.Render.Transparency = transparancy;
+					//block.FatBlock.Render.UpdateTransparency();
+
+					//attempt3
+					//block.FatBlock.Transparent = !showBlock;
+
+					//attempt4... no fatblock on armor?
+					/*var render = block.FatBlock.Render;
+					if (render != null)
+					{
+						//var transparency = !showBlock ? 0.5f : 0f;
+						render.Transparency = transparancy;
+					}*/
+
+					block.Dithering = transparancy;
+				}
+			}
+
 		}
 
 		public void PrintBlockNames()
