@@ -37,22 +37,29 @@ namespace Chozabu.ConveyorReplacer
 		{
 			if (messageText == "/conv" && MyAPIGateway.Session.IsServer)
 			{
-				MyAPIGateway.Utilities.ShowMessage("", "conv converting");
+				MyAPIGateway.Utilities.ShowMessage("", "conv converting to tube");
 				ReplaceAllConveyorBlocks();
 				sendToOthers = false;
 				MyAPIGateway.Utilities.ShowMessage("", "conv converted");
 			}
 			if (messageText == "/convp" && MyAPIGateway.Session.IsServer)
 			{
-				MyAPIGateway.Utilities.ShowMessage("", "conv converting");
+				MyAPIGateway.Utilities.ShowMessage("", "conv converting to pipe");
 				ReplaceAllConveyorBlocks("p");
 				sendToOthers = false;
 				MyAPIGateway.Utilities.ShowMessage("", "conv converted");
 			}
 			if (messageText == "/convr" && MyAPIGateway.Session.IsServer)
 			{
-				MyAPIGateway.Utilities.ShowMessage("", "conv converting");
+				MyAPIGateway.Utilities.ShowMessage("", "conv converting to ducts");
 				ReplaceAllConveyorBlocks("r");
+				sendToOthers = false;
+				MyAPIGateway.Utilities.ShowMessage("", "conv converted");
+			}
+			if (messageText == "/convj" && MyAPIGateway.Session.IsServer)
+			{
+				MyAPIGateway.Utilities.ShowMessage("", "conv converting to junc");
+				ReplaceAllConveyorBlocks("j");
 				sendToOthers = false;
 				MyAPIGateway.Utilities.ShowMessage("", "conv converted");
 			}
@@ -66,13 +73,19 @@ namespace Chozabu.ConveyorReplacer
 			if (messageText == "/showarmor" && MyAPIGateway.Session.IsServer)
 			{
 				MyAPIGateway.Utilities.ShowMessage("", "ShowingArmor");
-				SetArmorVisibility(true);
+				SetArmorTransparancy(.0f);
 				sendToOthers = false;
 			}
 			if (messageText == "/hidearmor" && MyAPIGateway.Session.IsServer)
 			{
 				MyAPIGateway.Utilities.ShowMessage("", "HidingArmor");
-				SetArmorVisibility(false);
+				SetArmorTransparancy(.8f);
+				sendToOthers = false;
+			}
+			if (messageText == "/hidearmor50" && MyAPIGateway.Session.IsServer)
+			{
+				MyAPIGateway.Utilities.ShowMessage("", "HidingArmor");
+				SetArmorTransparancy(.5f);
 				sendToOthers = false;
 			}
 
@@ -98,10 +111,8 @@ namespace Chozabu.ConveyorReplacer
 			return grid;
 		}
 
-		public void SetArmorVisibility(bool showBlock)
+		public void SetArmorTransparancy(float transparancy)
 		{
-			float transparancy = 0.0f;
-			if (!showBlock) transparancy = 0.8f;
 			IMyCubeGrid grid = GetTargetedGrid();
 			if (grid == null) return;
 
@@ -115,25 +126,7 @@ namespace Chozabu.ConveyorReplacer
 
 				if (block.GetObjectBuilder().SubtypeName.Contains("Armor"))// && block.FatBlock != null)
 				{
-					MyAPIGateway.Utilities.ShowMessage("", block.GetObjectBuilder().SubtypeName);
-					//attmpt1
-					//block.FatBlock.Render.Visible = showBlock;
-
-					//attempt2
-					//block.FatBlock.Render.Transparency = transparancy;
-					//block.FatBlock.Render.UpdateTransparency();
-
-					//attempt3
-					//block.FatBlock.Transparent = !showBlock;
-
-					//attempt4... no fatblock on armor?
-					/*var render = block.FatBlock.Render;
-					if (render != null)
-					{
-						//var transparency = !showBlock ? 0.5f : 0f;
-						render.Transparency = transparancy;
-					}*/
-
+					//MyAPIGateway.Utilities.ShowMessage("", block.GetObjectBuilder().SubtypeName);
 					block.Dithering = transparancy;
 				}
 			}
@@ -284,6 +277,14 @@ namespace Chozabu.ConveyorReplacer
 				straightS = "ConveyorTubeDuct";
 				cornerS = "ConveyorTubeDuctCurved";
 				tS = "ConveyorTubeDuctT";
+
+			}
+			else if (tubetype.Equals("j"))
+			{
+				junctionS = "LargeBlockConveyor";
+				straightS = "LargeBlockConveyor";
+				cornerS = "LargeBlockConveyor";
+				tS = "LargeBlockConveyor";
 
 			}
 
