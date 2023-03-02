@@ -20,6 +20,7 @@ namespace Chozabu.ConveyorReplacer
 	[MySessionComponentDescriptor(MyUpdateOrder.AfterSimulation)]
 	public class ArmorReplacer : MySessionComponentBase
 	{
+		float armorTransparancy = 0.0f;
 
 		struct replaceinfo
 		{
@@ -27,8 +28,36 @@ namespace Chozabu.ConveyorReplacer
 			public MyObjectBuilder_CubeBlock objectBuilder;
 
 		}
+		public override void HandleInput()
+		{
+			if (MyAPIGateway.Input.IsNewKeyPressed(VRage.Input.MyKeys.O))
+			{
+				if (MyAPIGateway.Input.IsAnyCtrlKeyPressed())
+                {
+					CycleArmorTransparancy();
+                }
+			}
+		}
 
-		public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
+        private void CycleArmorTransparancy()
+		{
+			if (armorTransparancy == 0.0f)
+            {
+				armorTransparancy = .5f;
+
+			} else if (armorTransparancy == 0.5f)
+			{
+				armorTransparancy = .8f;
+
+			} else if (armorTransparancy == 0.8f)
+			{
+				armorTransparancy = .0f;
+
+			}
+			SetArmorTransparancy(armorTransparancy);
+		}
+
+        public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
 		{
 			MyAPIGateway.Utilities.MessageEntered += Utilities_MessageEntered;
 		}
@@ -155,6 +184,12 @@ namespace Chozabu.ConveyorReplacer
 			IMyCubeGrid grid = GetTargetedGrid();
 			if (grid == null) return;
 
+			if (grid.GridSizeEnum == MyCubeSize.Small)//TODO Rotations need correcting too
+			{
+				MyAPIGateway.Utilities.ShowMessage("", "Skipping small grid");
+
+			}
+
 			// Find all conveyor blocks on the grid
 			List<IMySlimBlock> conveyorBlocks = new List<IMySlimBlock>();
 			List<replaceinfo> replaceList = new List<replaceinfo>();
@@ -166,6 +201,10 @@ namespace Chozabu.ConveyorReplacer
 			// Replace each conveyor block with the correct type
 			foreach (IMySlimBlock conveyorBlock in conveyorBlocks)
 			{
+                if (conveyorBlock.FatBlock.BlockDefinition.TypeId.ToString().ToLower().Contains("sort"))
+                {
+					continue;
+                }
 				replaceinfo blockinfo;
 				blockinfo.block = conveyorBlock;
 				blockinfo.objectBuilder = GetBuilderToReplaceConveyor(conveyorBlock, tubetype);
@@ -286,6 +325,21 @@ namespace Chozabu.ConveyorReplacer
 				cornerS = "LargeBlockConveyor";
 				tS = "LargeBlockConveyor";
 
+			}
+
+			if (block.CubeGrid.GridSizeEnum == MyCubeSize.Small)//TODO Rotations need correcting too
+			{
+				junctionS = "SmallBlockConveyor";
+				straightS = "ConveyorTubeSmall";
+				cornerS = "ConveyorTubeSmallCurved";
+				tS = "ConveyorTubeSmallT";
+				if (tubetype.Equals("r"))
+				{
+					junctionS = "SmallBlockConveyor";
+					straightS = "ConveyorTubeDuctSmall";
+					cornerS = "ConveyorTubeDuctSmallCurved";
+					tS = "ConveyorTubeDuctSmallT";
+				}
 			}
 
 			var surroundings = GetConveyorNeighbors(block);
