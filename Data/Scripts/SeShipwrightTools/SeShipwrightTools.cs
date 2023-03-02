@@ -187,6 +187,7 @@ namespace Chozabu.ConveyorReplacer
 			if (grid.GridSizeEnum == MyCubeSize.Small)//TODO Rotations need correcting too
 			{
 				MyAPIGateway.Utilities.ShowMessage("", "Skipping small grid");
+				return;
 
 			}
 
