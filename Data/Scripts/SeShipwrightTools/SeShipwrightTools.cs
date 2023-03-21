@@ -244,7 +244,7 @@ namespace Chozabu.ConveyorReplacer
 
 		}
 		//based on digis code at: https://github.com/THDigi/BuildInfo/blob/ac69e815a9c82e3d0e27013f86109af556a1f503/Data/Scripts/BuildInfo/Features/LiveData/LiveDataHandler.cs#L178
-		bool CheckConveyorSupport(IMyCubeBlock block)
+		bool CheckConveyorSupport(IMyCubeBlock block, IMySlimBlock testblock)
 		{
 			if (block == null) return false;
 
@@ -270,6 +270,34 @@ namespace Chozabu.ConveyorReplacer
 		}
 		//todo check if port is in right direction: https://github.com/THDigi/BuildInfo/blob/master/Data/Scripts/BuildInfo/Features/LiveData/Base.cs#L238
 
+
+		bool CheckConveyorPortNearTestblock(IMyCubeBlock block, IMySlimBlock testblock)
+		{
+			Dictionary<string, IMyModelDummy> dummies = new Dictionary<string, IMyModelDummy>();
+			block.Model.GetDummies(dummies);
+
+			foreach (IMyModelDummy dummy in dummies.Values)
+			{
+
+				//Vector3 portpos = dummy.Matrix.Translation + block.Position;
+				//Vector3 testpos = testblock.Position;
+
+				//Vector3 portpos = Vector3.Transform(dummy.Matrix.Translation, block.WorldMatrix);
+				//Vector3 testpos = Vector3.Transform(testblock.Position, testblock.CubeGrid.WorldMatrix);
+
+				Vector3 portpos = Vector3.Transform(dummy.Matrix.Translation, block.LocalMatrix);
+				Vector3 testpos = testblock.Position;
+
+				//need to do both blocks, using one of these 
+				//new MyOrientedBoundingBox(dummy.Matrix * block.LocalMatrix)
+				//new BoundingBox()
+
+				if ((portpos - testpos).Length() < 3.0f)
+					return true;
+			}
+			return false;
+		}
+
 		public List<IMySlimBlock> GetConveyorNeighbors(IMySlimBlock block)
 		{
 			List<IMySlimBlock> conveyorBlocks = new List<IMySlimBlock>();
@@ -285,8 +313,21 @@ namespace Chozabu.ConveyorReplacer
 					conveyorBlocks.Add(neighbor);
 				} else
                 {
+                    if (CheckConveyorSupport(neighbor.FatBlock, block))
+                    {
+
+						List<IMySlimBlock> uglyhack = new List<IMySlimBlock>();
+						uglyhack.Add(neighbor);
+						uglyhack.Add(neighbor);
+						uglyhack.Add(neighbor);
+						uglyhack.Add(neighbor);
+						uglyhack.Add(neighbor);
+						uglyhack.Add(neighbor);
+						return uglyhack;//TODO remove this, use dummys...
+
+					}
                     //neighbor.FatBlock.CheckConnectionAllowed
-                    if (CheckConveyorSupport(neighbor.FatBlock)) {
+                    if (CheckConveyorPortNearTestblock(neighbor.FatBlock, block)) {
 					//if (conveyorBlock != null)
 					//{
 						conveyorBlocks.Add(neighbor);
